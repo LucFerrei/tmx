@@ -112,7 +112,7 @@ list_active_sessions() {
 get_inactive_dirs() {
     local active_sesssions=$(list_active_sessions)
 
-    find "${DEFAULT_PATH[@]}" -maxdepth 1 ! -name '.*' -type d -print0 | while IFS= read -r -d '' dir; do
+    find "${DEFAULT_PATH[@]}" -mindepth 1 -maxdepth 1 ! -name '.*' -type d -print0 | while IFS= read -r -d '' dir; do
     local session_dir=$(get_session_name $dir)
 
     list_active_sessions | grep -q $session_dir
@@ -124,7 +124,7 @@ done
 
 fzf_dir() {
     if ! tmux has-session 2>/dev/null; then
-	find "${DEFAULT_PATH[@]}" -maxdepth 1 ! -name '.*' -type d | fzf
+	find "${DEFAULT_PATH[@]}" -mindepth 1 -maxdepth 1 ! -name '.*' -type d | fzf
     else
        {
 	   tmux list-sessions -F "#{session_last_attached} [TMUX] #S" | sort -rn | cut -d' ' -f2-
