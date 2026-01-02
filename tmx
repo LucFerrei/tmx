@@ -177,35 +177,26 @@ create_or_attach_session() {
 	    # echo "criando nova sessão"
 	    tmux new -s "$session" -c $path -d
 
-		get_attribute "windows" $path
-		get_attribute "commands" $path
-		if [[ ${#WINDOWS[@]} -gt 0 && ${#COMMANDS[@]} -gt 0 ]]; then
-		    # echo "executando arquivo de config"
-		    sleep 0.1
-		    tmux send-keys -t "$session":1 "tmux new-window -n temporary -t 100" Enter
-		    tmux send-keys -t "$session":1 "clear" Enter
-		    sleep 0.1
-		    for i in "${!WINDOWS[@]}"; do
-			# echo "entrando no loop"
-			local next=$((i+1))
+	    get_attribute "windows" $path
+	    get_attribute "commands" $path
+	    if [[ ${#WINDOWS[@]} -gt 0 && ${#COMMANDS[@]} -gt 0 ]]; then
+		for i in "${!WINDOWS[@]}"; do
+		    local window_name="${WINDOWS[$i]}"
+		    local cmd="${COMMANDS[$i]}"
+		    local target_idx=$((i + 1))
 
-			# echo "Next: $next"
-			# echo "I: $i"
-			# echo "Session: $session"
-
-			if [ "$i" -eq 0 ]; then
-			    tmux send-keys -t "$session":100 "tmux rename-window -t $next ${WINDOWS[$i]}" Enter
-			    tmux send-keys -t "$session":$next "${COMMANDS[$i]}" Enter
-			else
-			    sleep 0.1
-			    tmux send-keys -t "$session":100 "tmux neww -n ${WINDOWS[$i]}" Enter
-			    sleep 0.05
-			    tmux send-keys -t "$session":$next "${COMMANDS[$i]}" Enter
-			fi
-		    done
-		    # sleep 0.1
-		    tmux send-keys -t "$session":100 "tmux kill-window -t 100" Enter
-		fi
+		    if [ "$i" -eq 0 ]; then
+			# Rename the existing first window and run the command
+			tmux rename-window -t "$session":1 "$window_name"
+			tmux send-keys -t "$session":1 "$cmd" Enter
+		    else
+			# Create a new window and run the command immediately
+			# The -d flag prevents tmux from switching your view every time
+			tmux new-window -d -t "$session" -n "$window_name"
+			tmux send-keys -t "$session":"$window_name" "$cmd" Enter
+		    fi
+		done
+	    fi
 		tmux switch-client -t "$session":1
 	else
 	    is_empty "$active_session"
