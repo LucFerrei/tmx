@@ -192,7 +192,7 @@ create_or_attach_session() {
 		    else
 			# Create a new window and run the command immediately
 			# The -d flag prevents tmux from switching your view every time
-			tmux new-window -d -t "$session" -n "$window_name"
+			tmux new-window -d -t "$session" -n "$window_name" -c "$path" 
 			tmux send-keys -t "$session":"$window_name" "$cmd" Enter
 		    fi
 		done
