@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+mode=$1
+
 CONFIG_FILE="$HOME/.config/tmx/tmx.conf"
 DEFAULT_PATH=($HOME $HOME/personal/)
 declare -a WINDOWS
 declare -a COMMANDS
+
 
 have_config() {
     if [ -f "$CONFIG_FILE" ]; then
@@ -58,8 +61,6 @@ get_attribute() {
     fi
 }
 
-# TODO: sanitize to remove last / if have
-# fix: it is not necessary. By default, dir in fzf does not have this list slash
 get_session_name() {
     path=$1
     name=$(echo $1 | rev | cut -d'/' -f1,2 | rev)
@@ -67,7 +68,7 @@ get_session_name() {
 }
 
 in_tmux() {
-    if [ -z $TMUX ]; then
+    if [ -z "$TMUX" ]; then
 	return 1
     else
 	return 0
@@ -124,12 +125,13 @@ done
 
 fzf_dir() {
     if ! tmux has-session 2>/dev/null; then
-	find "${DEFAULT_PATH[@]}" -mindepth 1 -maxdepth 1 ! -name '.*' -type d | fzf
+	find "${DEFAULT_PATH[@]}" -mindepth 1 -maxdepth 1 ! -name '.*' -type d | fzf --height=90% --layout=reverse --border --margin=5%,10%
     else
        {
 	   tmux list-sessions -F "#{session_last_attached} [TMUX] #S" | sort -rn | cut -d' ' -f2-
 	   get_inactive_dirs
-       } | fzf
+       } | fzf --height=90% --layout=reverse --border --margin=5%,10%
+
     fi
 }
 
@@ -229,5 +231,21 @@ create_or_attach_session() {
     fi
 }
 
-set_default_path 
-create_or_attach_session 
+create_mode() {
+    # needs to be the full path
+    create_session=$1
+}
+
+
+if [ "$mode" = "delete" ]; then
+    echo "Delete"
+elif [ "$mode" = "append" ]; then
+    echo "Invalid mode"
+elif [ "$mode" = "create" ]; then
+    echo "Invalid mode"
+elif [ "$mode" = "" ]; then
+    set_default_path 
+    create_or_attach_session 
+else
+    echo "invalid mode"
+fi
