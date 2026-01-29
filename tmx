@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
 mode=$1
 
 CONFIG_FILE="$HOME/.config/tmx/tmx.conf"
@@ -7,6 +13,18 @@ DEFAULT_PATH=($HOME $HOME/personal/)
 declare -a WINDOWS
 declare -a COMMANDS
 
+show_help() {
+    cat << HELP
+USAGE: 
+
+COMMANDS:
+
+ARGUMENTS:
+
+OPTIONS:
+
+HELP
+}
 
 have_config() {
     if [ -f "$CONFIG_FILE" ]; then
