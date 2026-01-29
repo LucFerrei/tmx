@@ -143,12 +143,14 @@ done
 
 fzf_dir() {
     if ! tmux has-session 2>/dev/null; then
-	find "${DEFAULT_PATH[@]}" -mindepth 1 -maxdepth 1 ! -name '.*' -type d | fzf --height=90% --layout=reverse --border --margin=5%,10%
+	find "${DEFAULT_PATH[@]}" -mindepth 1 -maxdepth 1 ! -name '.*' -type d | fzf --height=91% --layout=reverse --border --margin=5%,10% \
+    --color="bg+:#1a1b1e,bg:#000000,spinner:#ff7eb6,hl:#78a9ff,fg:#f2f4f8,header:#ff7eb6,info:#39c5bb,pointer:#be95ff,marker:#39c5bb,fg+:#f2f4f8,prompt:#be95ff,hl+:#78a9ff,selected-bg:#282a2e,border:#444444,label:#f2f4f8"
     else
        {
 	   tmux list-sessions -F "#{session_last_attached} [TMUX] #S" | sort -rn | cut -d' ' -f2-
 	   get_inactive_dirs
-       } | fzf --height=90% --layout=reverse --border --margin=5%,10%
+       } | fzf --height=91% --layout=reverse --border --margin=5%,10% \
+    --color="bg+:#1a1b1e,bg:#000000,spinner:#ff7eb6,hl:#78a9ff,fg:#f2f4f8,header:#ff7eb6,info:#39c5bb,pointer:#be95ff,marker:#39c5bb,fg+:#f2f4f8,prompt:#be95ff,hl+:#78a9ff,selected-bg:#282a2e,border:#444444,label:#f2f4f8"
 
     fi
 }
